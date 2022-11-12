@@ -12,7 +12,8 @@ namespace Api
     {
         public static void Main(string[] args)
         {
-            Console.Title = "API";
+            // 11/12/2022 12:19 am - SSN - This does change the window title.  We need to setting it from batch file so we can use our name to close it.
+            // Console.Title = "API";
 
             CreateHostBuilder(args).Build().Run();
         }

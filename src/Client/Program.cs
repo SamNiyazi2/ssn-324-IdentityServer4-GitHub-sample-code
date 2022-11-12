@@ -16,12 +16,19 @@ namespace Client
             // discover endpoints from metadata
             var client = new HttpClient();
 
-            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:5001");
+            // 11/11/2022 10:35 pm - SSN 
+            // Must run client only from Visual Studio.  Servers must be started from the command line
+            // ssn_run_servers_1.cmd
+            // Changed port 5001 to 6001, otherwise it will not run.
+
+            var disco = await client.GetDiscoveryDocumentAsync("https://localhost:6001");
             if (disco.IsError)
             {
                 Console.WriteLine(disco.Error);
                 return;
             }
+
+            Console.WriteLine("20221111-2236 - Requesting token:");
 
             // request token
             var tokenResponse = await client.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
@@ -32,7 +39,7 @@ namespace Client
 
                 Scope = "api1"
             });
-            
+
             if (tokenResponse.IsError)
             {
                 Console.WriteLine(tokenResponse.Error);
@@ -46,16 +53,25 @@ namespace Client
             var apiClient = new HttpClient();
             apiClient.SetBearerToken(tokenResponse.AccessToken);
 
-            var response = await apiClient.GetAsync("https://localhost:6001/identity");
+
+            Console.WriteLine("20221111-2237 - Calling identity server:");
+
+            var response = await apiClient.GetAsync("https://localhost:5201/identity");
             if (!response.IsSuccessStatusCode)
             {
+                Console.WriteLine("20221111-2238 - Error response");
                 Console.WriteLine(response.StatusCode);
             }
             else
             {
+                Console.WriteLine("20221111-2239 - Valid response");
                 var content = await response.Content.ReadAsStringAsync();
                 Console.WriteLine(JArray.Parse(content));
             }
+
+            Console.WriteLine("20221111-2240 - End.");
+            Console.WriteLine("\n\nHit any key.");
+            Console.ReadKey();
         }
     }
 }
